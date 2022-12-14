@@ -15,7 +15,8 @@ class Store {
    */
   constructor({store,prefix= '',log= false, evictAfter = 60000, maxLength = 5000000} = {}) {
     // there is a small memory cache to store stuff in to avoid going to cache/props every time
-    this.store = store || PropertiesService.getUserProperties()
+    this.store = store
+    if (!this.store) throw 'please supply a property store parameter to the Store constructor'
     this.prefix = prefix
     this.log = log
     if (maxLength) this.preCache = new Exports.PreCache ({evictAfter, log , maxLength})
