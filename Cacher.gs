@@ -45,7 +45,11 @@ class Cacher {
     this.log = log
     this.reCache = reCache
     if (this.stale && !this.staleKey) throw `Must specify a staleKey if stale is active`
-    this.preCache = maxLength ? new Exports.PreCache({ evictAfter, log, maxLength }) : null
+    this.preCache = maxLength ? Exports.newPreCache({ evictAfter, log, maxLength }) : null
+  }
+
+  report () {
+    return this.preCache ? this.preCache.report() : null
   }
 
   /**
@@ -54,13 +58,7 @@ class Cacher {
    * return {string}
    */
   digester(...args) {
-    // conver args to an array and digest them
-    const t = args.map(function (d) {
-      if (typeof d === typeof undefined) throw new Error('digester key component cant be undefined')
-      return (Object(d) === d) ? JSON.stringify(d) : d.toString();
-    }).join("-")
-    const s = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_1, t, Utilities.Charset.UTF_8)
-    return Utilities.base64EncodeWebSafe(s)
+    return Utils.digester (...args)
   }
 
   /**
@@ -113,7 +111,7 @@ class Cacher {
 
     // create a key from the request uniqueness
     const digestedKey = this.keyer(key, options)
-
+   
     // best to get it from precache
     let data = this.preCache && this.preCache.get(digestedKey)
     if (data) {
@@ -178,8 +176,9 @@ class Cacher {
 
     // create a key from the request uniqueness
     const digestedKey = this.keyer(key, options)
+    
     if (this.log) {
-      console.log('cacherlog', 'setting', key, options, digestedKey, data ? data : 'no data')
+      console.log('cacherlog', 'setting', expiry, key, options, digestedKey, data ? data : 'no data')
     }
     // if there's no data to write, clear previous occupant
     if (Exports.Utils.isNU(data)) {
@@ -205,6 +204,7 @@ class Cacher {
       this.cachePoint.putAll(bits, expiry + 10)
     }
     // write the header
+    
     this.cachePoint.put(digestedKey, JSON.stringify(parent), expiry)
     return data
 
@@ -229,7 +229,3 @@ class Cacher {
     if (this.preCache) this.preCache.remove(key)
   }
 }
-
-
-
-
