@@ -29,6 +29,7 @@ var Exports = {
   newStore (...args) {
     return new Proxy (new this.Store(...args), this.validateProperties)
   },
+
   /**
    * Cacher class
    * @implements {Cacher} 
@@ -38,11 +39,29 @@ var Exports = {
   },
 
   /**
+   * Cacher instance with validation
+   * @param {...*} args
+   * @return {Cacher} a proxied instance of cacher with property checking enabled
+   */
+  newCacher(...args) {
+    return new Proxy(new this.Cacher(...args), this.validateProperties)
+  },
+
+  /**
    * PreCache class
    * @implements {PreCache} 
    */
   get PreCache() {
     return PreCache
+  },
+
+  /**
+   * PreCache instance with validation
+   * @param {...*} args
+   * @return {PreCache} a proxied instance of PreCache with property checking enabled
+   */
+  newPreCache(...args) {
+    return new Proxy(new this.PreCache(...args), this.validateProperties)
   },
 
   /**
