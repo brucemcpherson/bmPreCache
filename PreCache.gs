@@ -21,6 +21,9 @@ class PreCache {
     this.evictAfter = evictAfter
     this.maxLength = maxLength
     this._ccBytes = 0
+    this.hits = 0
+    this.misses = 0
+    this.expires = 0
     this.log = log
   }
 
@@ -43,7 +46,7 @@ class PreCache {
   remove(key) {
     if (this._cc.has(key)) {
       if (this.log) console.log('_removing ', key, 'size', this._ccBytes)
-      const v= this._cc.get(key)
+      const v = this._cc.get(key)
       this._ccBytes -= v.length
       this._cc.delete(key)
       if (this.log) console.log('_removed ', key, 'size', this._ccBytes)
@@ -102,14 +105,26 @@ class PreCache {
   get(key) {
     if (this.log) console.log('_getting ', key, 'size', this._ccBytes)
     let cc = this._cc.has(key) && this._cc.get(key)
-    if (!cc) return null
+    if (!cc) {
+      this.misses++
+      return null
+    }
     cc = JSON.parse(cc)
     if (this._expired(cc)) {
+      this.expires++
       this._evict()
       return null
     }
     if (this.log) console.log('_got ', key, 'size', this._ccBytes)
+    this.hits++
     return cc.value
+  }
+  report() {
+    return {
+      hits: this.hits,
+      misses: this.misses,
+      expires: this.expires
+    }
   }
   /**
    * delete a key
@@ -122,8 +137,8 @@ class PreCache {
    * clear everything
    */
   clear() {
-    this.cc = new Map()
-    this.ccBytes = 0
+    this._cc = new Map()
+    this._ccBytes = 0
   }
 }
 
