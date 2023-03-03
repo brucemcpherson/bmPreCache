@@ -5,7 +5,7 @@
 
 /**
  * typedef PreCacheOptions
- * @property {number} [evictAfter =30000] store memory cache eviction after this timewill still work
+ * @property {number} [evictAfter = 60000] store memory cache eviction after this timewill still work
  * @property {number} [maxLength =5000000] start evicting if cache reaches this size
  * @property {boolean} [log=false] logging
  * @return {PreCache}
