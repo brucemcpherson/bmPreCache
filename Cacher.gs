@@ -109,15 +109,18 @@ class Cacher {
     // we can't cache this
     if (!this.cacheable) return null
 
+    // best to get it from precache
+    // we dont need to worry about the stale key
+    // as makestale clears precache anyway
+    let data = this.preCache && this.preCache.get(key)
+    if (data) {
+      if (this.log)console.log('got ', key, 'from precache')
+      return data
+    }
+
     // create a key from the request uniqueness
     const digestedKey = this.keyer(key, options)
    
-    // best to get it from precache
-    let data = this.preCache && this.preCache.get(digestedKey)
-    if (data) {
-      if (this.log)console.log('got ', digestedKey, 'from precache')
-      return data
-    }
 
     // get it from cache if we can
     data = this.cachePoint.get(digestedKey)
@@ -125,6 +128,7 @@ class Cacher {
       console.log('cacherlog', 'getting', key, options, digestedKey, data ? data.slice(0, 100) : 'no data')
     }
     if (!data) return null
+
 
     // now we need to establish whether this was spread over several cache entries and dechunk it
     let {
@@ -154,6 +158,11 @@ class Cacher {
       this.set(key, result, {
         options
       })
+    }
+
+    // it wasnt in precache so set it for next time
+    if (this.preCache) {
+      this.preCache.set (key , result)
     }
     return result
   }
@@ -188,7 +197,7 @@ class Cacher {
     }
     // we dont compress for memory access
     if (this.preCache) {
-      this.preCache.set (digestedKey , data)
+      this.preCache.set (key , data)
     }
     // compress the data
     const { parent, children } = Compress.keyChunks(digestedKey, data)
