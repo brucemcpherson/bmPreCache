@@ -27,31 +27,35 @@ class Store {
   }
 
   /**
-   * to make stuff in property store more versatile we'll convert it to an object and stringify it
+   * to make stuff in property store more versatile we'll convert it to an object and obify it
    * @param {*} ob
    * @return string
    */
-  stringify(ob) {
-    return Exports.Utils.isNU(ob) ? null : JSON.stringify({
+  obify(ob) {
+    return JSON.stringify({
       ob
     })
   }
 
   /**
-   * to make stuff in property store more versatile we'll convert it to an object and stringify it
+   * to make stuff in property store more versatile we'll convert it to an object and obify it
    * this undoes that
    * @param {string} value the value from store
    * @return {*}
    */
-  unstringify(value) {
-    if (Exports.Utils.isNU(value)) return null
-    try {
-      const { ob } = JSON.parse(value)
-      return typeof ob === typeof undefined ? value : ob
-    }
-    catch (err) {
-      return value
-    }
+  unobify(value) {
+    const u = Exports.Utils
+
+    // if its null or undefined then we didn't get anything
+    if (u.isNU(value)) return null
+
+    // otherwise we should have a value wrapped in an ob property
+    if (!u.isString(value)) throw 'expected value from store to be a string'
+    const vob = JSON.parse (value)
+    if (!Reflect.has(vob, 'ob')) throw `expected an ob property from store value`
+    const {ob} =vob
+    if (u.isUndefined(ob)) throw `unexpected undefined ob property from store value`
+    return ob
   }
 
 
@@ -59,19 +63,27 @@ class Store {
     if (this.preCache) this.preCache.remove(key)
     this.store.deleteProperty(key)
   }
+
   /**
     * put to property store
     * @param {string} key store agains this key
     * @param {*} value thing to write
     */
   set(key, value) {
-    if (Exports.Utils.isUndefined(value)) throw `attempt to set store value of ${key} to undefined`
+    const u = Exports.Utils
+    if (u.isUndefined(value)) throw `attempt to set store value of ${key} to undefined`
+
     if (this.log) console.log('storelog', 'setting', key, value)
+    
+    // if it's null, that's a valid setting
     if (this.preCache) {
-      this.preCache.set(key, { pc: value })
+      this.preCache.set(key, value)
     }
-    const payload = this.stringify(value)
+
+    // obify and set in store too
+    const payload = this.obify(value)
     this.store.setProperty(key, payload)
+    
     return value
   }
 
@@ -82,20 +94,16 @@ class Store {
    * @return {string} the value
    */
   get(key) {
-    const now = new Date().getTime()
-
-    let cc = this.preCache && this.preCache.get(key)
-
-    // take the value from pecache, or get it from store
-    let value = null
-    if (cc) {
-      value = cc.pc
-    } else {
-      value = this.unstringify(this.store.getProperty(key))
-      this.preCache.set(key, { pc: value })
+    // is it in preCache
+    // result will be undefined if not (because null is a valid value)
+    const u = Exports.Utils
+    let value = this.preCache && this.preCache.get(key)
+    if (u.isUndefined(value)) {
+      value = this.unobify(this.store.getProperty(key))
+      // set it in precache for next time
+      this.preCache.set(key,  value )
     }
-    if (this.log) console.log('storelog', 'getting', key, value, 'cc', cc, !Utils.isNull(cc))
-
+    if (this.log) console.log('storelog', 'getting', key, value)
     return value
   }
 
