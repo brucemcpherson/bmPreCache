@@ -1,5 +1,9 @@
 var Exports = {
 
+  get libExports () {
+    return bmUtils.Exports
+  },
+
   get validateProperties () {
     return {
       get(target, prop, receiver) {
@@ -77,16 +81,9 @@ var Exports = {
    * @implements {Utils} 
    */
   get Utils() {
-    return Utils
+    return this.libExports.Utils
   },
   
-  /**
-   * Unit Class 
-   * @implements {bmUnitTester.Unit} 
-   */
-  get Unit() {
-    return bmUnitTester.Unit
-  },
 
 }
 
