@@ -1,5 +1,5 @@
 # Google Apps Script Project: bmPreCache
-This repo (bmPreCache) was automatically updated on 3/4/2023, 1:43:14?PM by GasGit
+This repo (bmPreCache) was automatically updated on 4/14/2023, 3:14:52?PM by GasGit
 
 For more information on gasgit, see the [desktop liberation site](https://ramblings.mcpher.com/drive-sdk-and-github/migrategasgit/ "desktop liberation")
 
@@ -21,11 +21,14 @@ Cacher| server_js
 Store| server_js
 Compress| server_js
 PreCache| server_js
-Utils| server_js
 ### Directly referenced libraries
-no libraries discovered
+*library*|*identifier*|*key*|*version*|*dev mode*|*source*|
+--- | --- | --- | --- | --- | --- 
+bmUtils| bmUtils|1BSHC_YfPl6qs6HBvTteKIMyrL-FiuyEpKNGjS_szDb2PXEYUebddkgVR|2|no|no
 ### All dependencies and sub dependencies
-no libraries discovered
+*library*|*identifier*|*key*|*version*|*dev mode*|*source*|
+--- | --- | --- | --- | --- | --- 
+bmUtils| bmUtils|1BSHC_YfPl6qs6HBvTteKIMyrL-FiuyEpKNGjS_szDb2PXEYUebddkgVR|2|no|no
 ### Enabled Google Services
 no libraries discovered
 ### Scopes required
