@@ -68,7 +68,7 @@ class PreCache {
   set(key, value) {
 
     if (this.log) console.log('_setting ', key, 'size', this._ccBytes)
-    if (Utils.isUndefined(value)) throw `setting precache to undefined is not allowed for key ${key}`
+    if (Exports.Utils.isUndefined(value)) throw `setting precache to undefined is not allowed for key ${key}`
 
     const vob = {
       value,
