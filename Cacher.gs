@@ -58,7 +58,7 @@ class Cacher {
    * return {string}
    */
   digester(...args) {
-    return Utils.digester (...args)
+    return Exports.Utils.digester (...args)
   }
 
   /**
